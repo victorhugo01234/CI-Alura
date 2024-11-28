@@ -22,10 +22,13 @@ jobs:
         go-version: '1.22'
 
     - name: Inicia Banco
-      run: docker-compose up -d postgres
+      run: docker compose up -d postgres
 
     - name: Lint
-      run: docker run --rm -itv $(CURDIR):/app -w /app golangci/golangci-lint golangci-lint run controllers/ database/ models/ routes/
+      uses: golangci/golangci-lint-action@v6
+      with:
+        version: v1.59
+        args: controllers/ database/ models/ routes/
       
     - name: Test
-      run: go test -v main_test.go
+      run: DB_HOST=${{secrets.DB_HOST}} DB_PASSWORD=${{secrets.DB_PASSWORD}} DB_USER=${{secrets.DB_USER}} DB_NAME=${{secrets.DB_NAME}} DB_PORT=${{secrets.DB_PORT}} go test -v main_test.go
