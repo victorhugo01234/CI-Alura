@@ -5,21 +5,24 @@ name: Integração Contínua
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ '*' ]
 
 jobs:
 
   ci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go_version: ['1.22', '1.18']
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.22'
+        go-version: ${{matrix.go_version}}
 
     - name: Inicia Banco
       run: docker compose up -d postgres
@@ -32,12 +35,13 @@ jobs:
       
     - name: Test
       run: DB_HOST=${{secrets.DB_HOST}} DB_PASSWORD=${{secrets.DB_PASSWORD}} DB_USER=${{secrets.DB_USER}} DB_NAME=${{secrets.DB_NAME}} DB_PORT=${{secrets.DB_PORT}} go test -v main_test.go
-
+    
     - name: Build
       run: go build main.go
-
+    
     - name: Projeto compilado
       uses: actions/upload-artifact@v4
       with:
         name: projeto_compilado
         path: main
+        overwrite: true
