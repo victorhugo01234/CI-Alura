@@ -45,5 +45,3 @@ jobs:
         name: projeto_compilado
         path: main
         overwrite: true
-        
-
