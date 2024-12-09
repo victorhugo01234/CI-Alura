@@ -43,3 +43,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: [projeto_compilado, ${{matrix.go_version}}]
+
